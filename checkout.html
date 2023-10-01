@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Donate</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<section id="donatesection">
+    <div class="container pt-5">
+        <main>
+            <div class="row g-5">
+                <div class="col-12">
+                    <h4 class="mb-3"><span style="font-weight: bold">Donate &hearts;</span></h4>
+                    <form class="needs-validation" novalidate="">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" placeholder="you@example.com" required="">
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <h4 class="mb-3">Payment</h4>
+                        <div class="row gy-3">
+                            <div class="col-md-6">
+                                <label for="cc-name" class="form-label">Name on card</label>
+                                <input type="text" class="form-control" id="cc-name" placeholder="" required="">
+                                <small class="text-body-secondary">Full name as displayed on card</small>
+                                <div class="invalid-feedback">
+                                    Name on card is required
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="cc-number" class="form-label">Credit card number</label>
+                                <input type="text" class="form-control" id="cc-number" placeholder="" required="">
+                                <div class="invalid-feedback">
+                                    Credit card number is required
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="cc-expiration" class="form-label">Expiration</label>
+                                <input type="text" class="form-control" id="cc-expiration" placeholder="" required="">
+                                <div class="invalid-feedback">
+                                    Expiration date required
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="cc-cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cc-cvv" placeholder="" required="">
+                                <div class="invalid-feedback">
+                                    Security code required
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6">
+                                <label for="donation-amount" class="form-label">Donation Amount (Minimum 1 EUR/Dollar)</label>
+                                <input type="number" class="form-control" id="donation-amount" placeholder="Enter amount" min="1" required="">
+                                <div class="invalid-feedback">
+                                    Please enter a valid donation amount.
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="col-md-12">
+                            <label for="message" class="form-label"><h4>Message</h4> (Max 250 characters)</label>
+                            <textarea class="form-control" id="message" rows="4" maxlength="250" placeholder="Write your message here"></textarea>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <form id="payment-form paymentdiv">
+                            <div id="card-element">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+
+                            <!-- Used to display form errors. -->
+                            <div id="card-errors" role="alert"></div>
+
+                            <div class="container" id="stripe-button-container">
+                                <button type="submit" class="w-100 btn btn-primary btn-lg mb-5" id="checkout-button">Continue to checkout</button>
+                            </div>
+                        </form>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.querySelector('form.needs-validation');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var inputs = form.querySelectorAll('.form-control');
+            var isValid = true;
+
+            inputs.forEach(function (input) {
+                if (!input.validity.valid) {
+                    input.classList.add('is-invalid');
+                    input.nextElementSibling.textContent = input.validationMessage;
+                    isValid = false;
+                }
+            });
+
+            if (isValid) {
+                var stripe = Stripe('YOUR_STRIPE_PUBLIC_KEY');
+                var elements = stripe.elements();
+
+                var card = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            fontFamily: 'Arial, sans-serif',
+                        },
+                    }
+                });
+
+                card.mount('#card-element');
+
+                stripe.createPaymentMethod({
+                    type: 'card',
+                    card: card,
+                }).then(function (result) {
+                    if (result.error) {
+                        alert(result.error.message);
+                    } else {
+                        var email = document.getElementById('email').value;
+                        var amount = parseInt(document.getElementById('donation-amount').value);
+                        var message = document.getElementById('message').value;
+
+                        var donationData = {
+                            email: email,
+                            amount: amount,
+                            message: message
+                        };
+
+                        fetch('YOUR_AZURE_STORAGE_ENDPOINT', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(donationData),
+                        })
+                            .then(function (response) {
+                                if (response.ok) {
+                                    alert('Payment completed successfully!');
+                                } else {
+                                    alert('Payment failed. Please try again later.');
+                                }
+                            });
+                    }
+                });
+            }
+        });
+
+        var inputs = form.querySelectorAll('.form-control');
+        inputs.forEach(function (input) {
+            input.addEventListener('input', function () {
+                if (input.validity.valid) {
+                    input.classList.remove('is-invalid');
+                    input.nextElementSibling.textContent = '';
+                }
+            });
+        });
+    });
+</script>
+</body></html>
