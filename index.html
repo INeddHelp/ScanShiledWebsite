@@ -26,20 +26,19 @@
         <div class="col-lg-6 mx-auto">
             <p class="lead mb-4">ScanShield is a software that allows you to monitor every process running on your system, their memory usage, and other technical details.</p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <button class="btn btn-primary rounded-pill px-3" type="button" style="background-color: #fc5959">
-                    <a class="text-decoration-none" style="color: white" href="https://donate.stripe.com/4gweWuey4bLrc5G28b">Donate</a>
+                <button class="btn btn-primary rounded-pill px-3" type="button" style="background-color: #fc5959; border: none;">
+                    <a class="text-decoration-none" style="color: white;" href="https://donate.stripe.com/4gweWuey4bLrc5G28b">Donate</a>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
                     </svg>
                 </button>
-                <a id="download-link" class="btn btn-primary rounded-pill px-3 text-decoration-none" type="button" style="color: white" href="https://gist.githubusercontent.com/INeddHelp/d8dd652f2ce8ac52fa6e6c19cbaaaac4/raw/79cd683fe0338aa557b26fbc1fe3d8ac15bdfb48/install_scanshield" download="install_scanshield">
+                <a class="btn btn-primary rounded-pill px-3 text-decoration-none" type="button" style="color: white;" href="https://github.com/INeddHelp/Scanshield-Disk/raw/93a99415bed94868898da749c8930be9c74abebb/dist/Scanshield.dmg" download>
                     Download
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
                         <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
                     </svg>
                 </a>
-                <!--<a class="text-decoration-none" href="" download="">Download</a>-->
             </div>
         </div>
     </div>
@@ -72,27 +71,6 @@
         </div>
     </div>
 </section>
-<script>
-    document.getElementById('download-link').addEventListener('click', function(event) {
-        event.preventDefault();
-        const url = this.href;
-        const filename = 'install_scanshield';
-
-        fetch(url)
-            .then(response => response.blob())
-            .then(blob => {
-                const file = new File([blob], filename, { type: 'application/octet-stream' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(file);
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(link.href);
-            })
-            .catch(console.error);
-    });
-</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>
